@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  ms-geolocalization:
+    build:
+      context: .
+      args:
+        BUILDPLATFORM: linux/arm64
+    platform: linux/arm64
+    ports:
+      - "8800:8800"
+    volumes:
+      - .:/app
+      - /app/node_modules
