@@ -49,21 +49,22 @@ const getDeliveryLocation = async (req, res) => {
 }
 
 const updateDeliveryLocation = async (req, res) => {
-    if (!req.params || !req.params.id || !req.body || !req.body.location) {
+    console.log("Updating delivery location with body:", req.body);
+    if (!req.body || !req.body.location || !req.body.user_id) {
         return res.status(400).json({
             success: false,
             status: 400,
-            message: "Delivery ID and location are required"
+            message: "Username and location are required"
         });
     }
-    const { id } = req.params;
-    const { location } = req.body;
+    const { location, user_id} = req.body;
+
 
     try {
         let { direccion, ciudad, departamento } = await getAddressFromLatLon(location.latitude, location.altitude);
         const delivery = await prisma.delivery.findUnique({
             where: {
-                id: parseInt(id)
+                user_id: user_id
             },
         });
         const locationExists = await prisma.location.findUnique({
@@ -84,7 +85,7 @@ const updateDeliveryLocation = async (req, res) => {
             });
             await prisma.delivery.update({
                 where: {
-                    id: parseInt(id)
+                    user_id: user_id
                 },
                 data: {
                     locationId: locationStatic.id
@@ -113,7 +114,7 @@ const updateDeliveryLocation = async (req, res) => {
             message: "Delivery location updated successfully",
             delivery: await prisma.delivery.findUnique({
                 where: {
-                    id: parseInt(id)
+                    user_id: user_id
                 },
                 include: {
                     location: true
