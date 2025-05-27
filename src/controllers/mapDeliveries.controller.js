@@ -96,7 +96,7 @@ const updateDeliveryLocation = async (req, res) => {
                     user_id: user_id
                 },
                 data: {
-                    locationId: locationStatic.id
+                    location_id: locationStatic.id
                 }
             });
         }
