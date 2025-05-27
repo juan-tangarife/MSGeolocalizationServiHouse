@@ -74,7 +74,10 @@ const updateDeliveryLocation = async (req, res) => {
         }
         const locationExists = await prisma.location.findUnique({
             where: {
-                id: delivery.location_id
+                latitude_altitude: {
+                    latitude: location.latitude,
+                    altitude: location.altitude,
+                }
             }
         });
         if (!locationExists) {
@@ -98,18 +101,12 @@ const updateDeliveryLocation = async (req, res) => {
             });
         }
         else {
-            await prisma.location.update({
+            await prisma.delivery.update({
                 where: {
-                    id: delivery.location_id
+                    user_id: user_id
                 },
                 data: {
-                    latitude: location.latitude,
-                    altitude: location.altitude,
-                    static: true,
-                    address: direccion,
-                    city: ciudad,
-                    department: departamento
-
+                    location_id: locationExists.id
                 }
             });
         }
