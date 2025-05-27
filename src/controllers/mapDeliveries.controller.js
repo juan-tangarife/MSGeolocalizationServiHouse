@@ -58,8 +58,6 @@ const updateDeliveryLocation = async (req, res) => {
         });
     }
     const { location, user_id} = req.body;
-
-
     try {
         let { direccion, ciudad, departamento } = await getAddressFromLatLon(location.latitude, location.altitude);
         const delivery = await prisma.delivery.findUnique({
@@ -67,6 +65,13 @@ const updateDeliveryLocation = async (req, res) => {
                 user_id: user_id
             },
         });
+        if (!delivery) {
+            return res.status(404).json({
+                success: false,
+                status: 404,
+                message: "Delivery not found for the user"
+            });
+        }
         const locationExists = await prisma.location.findUnique({
             where: {
                 id: delivery.location_id
