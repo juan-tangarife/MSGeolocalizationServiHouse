@@ -86,8 +86,8 @@ const updateDeliveryLocation = async (req, res) => {
                     latitude: location.latitude,
                     altitude: location.altitude,
                     static: true,
-                    address: direccion,
-                    city: ciudad,
+                    address: direccion || 'MANIZALES',
+                    city: ciudad || 'MANIZALES',
                     department: departamento
                 }
             });
