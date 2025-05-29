@@ -58,8 +58,6 @@ const updateDeliveryLocation = async (req, res) => {
         });
     }
     const { location, user_id} = req.body;
-
-
     try {
         let { direccion, ciudad, departamento } = await getAddressFromLatLon(location.latitude, location.altitude);
         const delivery = await prisma.delivery.findUnique({
@@ -67,9 +65,19 @@ const updateDeliveryLocation = async (req, res) => {
                 user_id: user_id
             },
         });
+        if (!delivery) {
+            return res.status(404).json({
+                success: false,
+                status: 404,
+                message: "Delivery not found for the user"
+            });
+        }
         const locationExists = await prisma.location.findUnique({
             where: {
-                id: delivery.location_id
+                latitude_altitude: {
+                    latitude: location.latitude,
+                    altitude: location.altitude,
+                }
             }
         });
         if (!locationExists) {
@@ -78,8 +86,8 @@ const updateDeliveryLocation = async (req, res) => {
                     latitude: location.latitude,
                     altitude: location.altitude,
                     static: true,
-                    address: direccion,
-                    city: ciudad,
+                    address: direccion || 'MANIZALES',
+                    city: ciudad || 'MANIZALES',
                     department: departamento
                 }
             });
@@ -88,23 +96,17 @@ const updateDeliveryLocation = async (req, res) => {
                     user_id: user_id
                 },
                 data: {
-                    locationId: locationStatic.id
+                    location_id: locationStatic.id
                 }
             });
         }
         else {
-            await prisma.location.update({
+            await prisma.delivery.update({
                 where: {
-                    id: delivery.location_id
+                    user_id: user_id
                 },
                 data: {
-                    latitude: location.latitude,
-                    altitude: location.altitude,
-                    static: true,
-                    address: direccion,
-                    city: ciudad,
-                    department: departamento
-
+                    location_id: locationExists.id
                 }
             });
         }
@@ -122,6 +124,8 @@ const updateDeliveryLocation = async (req, res) => {
             })
         });
     } catch (error) {
+        console.log("Error updating delivery location:", error);
+        
         return res.status(500).json({
             success: false,
             status: 500,
