@@ -124,6 +124,8 @@ const updateDeliveryLocation = async (req, res) => {
             })
         });
     } catch (error) {
+        console.log("Error updating delivery location:", error);
+        
         return res.status(500).json({
             success: false,
             status: 500,
