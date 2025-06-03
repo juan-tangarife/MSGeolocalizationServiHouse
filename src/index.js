@@ -29,7 +29,7 @@ app.use(cors({
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0',() => {
     console.log("Server running on:", port);
 });
 app.use('/api/geolocalization', routes);
